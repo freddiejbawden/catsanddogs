@@ -22,6 +22,10 @@ public class Player : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D col) {
+        if(col.gameObject.tag.Contains("Death")) {
+            die();
+        }
+
         if(col.gameObject.tag.Contains("Player")) {
             canKick = true;
             otherPlayer = col.gameObject;
@@ -29,6 +33,10 @@ public class Player : MonoBehaviour {
     }
 
     private void OnCollisionExit2D(Collision2D col) {
+        if(col.gameObject.tag.Contains("Death")) {
+
+        }
+
         if(col.gameObject.tag.Contains("Jump")) {
             canJump = false;
         }
@@ -43,7 +51,11 @@ public class Player : MonoBehaviour {
     void Update () {
         input();
         move();
-	}
+    }
+
+    private void die() {
+        Destroy(gameObject);
+    }
 
     private void input() {
         xMove = 0;
