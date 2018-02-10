@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
     private bool canJump;
@@ -14,6 +15,8 @@ public class Player : MonoBehaviour {
     private GameObject otherPlayer;
     private int xMove = 0;
     private int yMove = 0;
+    [SerializeField] private Sprite[] sprites = new Sprite[2];
+    public SpriteRenderer rend;
 
     private void OnCollisionEnter2D(Collision2D col) {
         if(col.gameObject.tag.Contains("Jump")) {
@@ -48,6 +51,10 @@ public class Player : MonoBehaviour {
         }
     }
 
+    void Start() {
+        rend = gameObject.GetComponent<SpriteRenderer>();
+    }
+
     void Update () {
         input();
         move();
@@ -73,32 +80,28 @@ public class Player : MonoBehaviour {
 
                 if(Input.GetKey(KeyCode.W) && canJump) {
                     yMove = 1;
-                } else if(Input.GetKey(KeyCode.S)) {
-                    yMove = -1;
                 }
 
-                if(Input.GetKey(KeyCode.Space) && canKick) {
+                if(Input.GetKey(KeyCode.E) && canKick) {
                     if(kickDelay < 0) {
                         kick();
                     }
                 }
             } else {
-                if(Input.GetKey(KeyCode.Keypad4)) {
+                if(Input.GetKey(KeyCode.J)) {
                     xMove--;
                 }
 
-                if(Input.GetKey(KeyCode.Keypad6)) {
+                if(Input.GetKey(KeyCode.L)) {
                     xMove++;
                 }
 
-                if(Input.GetKey(KeyCode.Keypad8) && canJump) {
+                if(Input.GetKey(KeyCode.I) && canJump) {
                     yMove = 1;
-                } else if(Input.GetKey(KeyCode.Keypad5)) {
-                    yMove = -1;
                 }
 
-                if(Input.GetKey(KeyCode.RightShift) && canKick) {
-                    if(kickDelay < 0) {
+                if(Input.GetKey(KeyCode.U) && canKick) {
+                    if(kickDelay <= 0) {
                         kick();
                     }
                 }
@@ -117,11 +120,17 @@ public class Player : MonoBehaviour {
     private void kick() {
         Vector2 kickForce = new Vector2(kickSpeed * xMove, 0.0f);
         otherPlayer.GetComponent<Rigidbody2D>().AddForce(kickForce);
+        rend.sprite = sprites[1];
         kickDelay = 0.2f;
     }
 
     private void move() {
-        kickDelay -= Manager.instance.timeModifier;
+        if(kickDelay > 0) {
+            kickDelay -= Manager.instance.timeModifier;
+        } else {
+            kickDelay = 0;
+            rend.sprite = sprites[0];
+        }
 
         Vector2 move = new Vector2(xMove, yMove) * speed * Manager.instance.timeModifier;
         transform.position = new Vector2(transform.position.x + move.x, transform.position.y);
