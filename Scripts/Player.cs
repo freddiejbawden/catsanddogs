@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-    [SerializeField] private bool canJump;
+    private bool canJump;
+    private bool canKick;
+    private bool isStunned;
     [SerializeField] private bool wasd;
     private float jumpSpeed = 500.0f;
+    private float kickDelay = 0.0f;
+    private float kickSpeed = 500.0f;
     private float speed = 5.0f;
+    private GameObject otherPlayer;
     private int xMove = 0;
     private int yMove = 0;
 
@@ -16,9 +21,22 @@ public class Player : MonoBehaviour {
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D col) {
+        if(col.gameObject.tag.Contains("Player")) {
+            canKick = true;
+            otherPlayer = col.gameObject;
+        }
+    }
+
     private void OnCollisionExit2D(Collision2D col) {
         if(col.gameObject.tag.Contains("Jump")) {
             canJump = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D col) {
+        if(col.gameObject.tag.Contains("Player")) {
+            canKick = false;
         }
     }
 
@@ -31,34 +49,50 @@ public class Player : MonoBehaviour {
         xMove = 0;
         yMove = 0;
 
-        if(wasd) {
-            if(Input.GetKey(KeyCode.A)) {
-                xMove--;
-            }
+        if(!isStunned) {
+            if(wasd) {
+                if(Input.GetKey(KeyCode.A)) {
+                    xMove--;
+                }
 
-            if(Input.GetKey(KeyCode.D)) {
-                xMove++;
-            }
+                if(Input.GetKey(KeyCode.D)) {
+                    xMove++;
+                }
 
-            if(Input.GetKey(KeyCode.W) && canJump) {
-                yMove = 1;
-            } else if(Input.GetKey(KeyCode.S)) {
-                yMove = -1;
+                if(Input.GetKey(KeyCode.W) && canJump) {
+                    yMove = 1;
+                } else if(Input.GetKey(KeyCode.S)) {
+                    yMove = -1;
+                }
+
+                if(Input.GetKey(KeyCode.Space) && canKick) {
+                    if(kickDelay < 0) {
+                        kick();
+                    }
+                }
+            } else {
+                if(Input.GetKey(KeyCode.Keypad4)) {
+                    xMove--;
+                }
+
+                if(Input.GetKey(KeyCode.Keypad6)) {
+                    xMove++;
+                }
+
+                if(Input.GetKey(KeyCode.Keypad8) && canJump) {
+                    yMove = 1;
+                } else if(Input.GetKey(KeyCode.Keypad5)) {
+                    yMove = -1;
+                }
+
+                if(Input.GetKey(KeyCode.RightShift) && canKick) {
+                    if(kickDelay < 0) {
+                        kick();
+                    }
+                }
             }
         } else {
-            if(Input.GetKey(KeyCode.LeftArrow)) {
-                xMove--;
-            }
-
-            if(Input.GetKey(KeyCode.RightArrow)) {
-                xMove++;
-            }
-
-            if(Input.GetKey(KeyCode.UpArrow) && canJump) {
-                yMove = 1;
-            } else if(Input.GetKey(KeyCode.DownArrow)) {
-                yMove = -1;
-            }
+            StartCoroutine(stopStun());
         }
     }
 
@@ -68,12 +102,31 @@ public class Player : MonoBehaviour {
         canJump = false;
     }
 
+    private void kick() {
+        Vector2 kickForce = new Vector2(kickSpeed * xMove, 0.0f);
+        otherPlayer.GetComponent<Rigidbody2D>().AddForce(kickForce);
+        kickDelay = 0.2f;
+    }
+
     private void move() {
+        kickDelay -= Manager.instance.timeModifier;
+
         Vector2 move = new Vector2(xMove, yMove) * speed * Manager.instance.timeModifier;
         transform.position = new Vector2(transform.position.x + move.x, transform.position.y);
 
         if(yMove == 1) {
             jump();
         }
+    }
+
+    private IEnumerator stopStun() {
+        yield return new WaitForSeconds(1);
+
+        isStunned = false;
+        StopAllCoroutines();
+    }
+
+    public void stun() {
+        isStunned = true;
     }
 }
