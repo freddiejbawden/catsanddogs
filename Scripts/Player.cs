@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +7,6 @@ public class Player : MonoBehaviour {
     private bool canJump;
     private bool canKick;
     private bool isStunned;
-    public bool isLoser;
     [SerializeField] private bool wasd;
     private int faceDir;
     private float jumpSpeed = 500.0f;
@@ -15,7 +14,6 @@ public class Player : MonoBehaviour {
     private float kickSpeed = 500.0f;
     private float speed = 5.0f;
     private GameObject otherPlayer;
-    private int lives = 3;
     private int xMove = 0;
     private int yMove = 0;
     [SerializeField] private Sprite[] sprites = new Sprite[2];
@@ -64,11 +62,7 @@ public class Player : MonoBehaviour {
     }
 
     private void die() {
-        lives--;
-
-        if(lives <= 0) {
-            isLoser = true;
-        }
+        Destroy(gameObject);
     }
 
     private void input() {
@@ -117,6 +111,7 @@ public class Player : MonoBehaviour {
                     }
                 }
             }
+						Debug.Log(faceDir);
         } else {
             StartCoroutine(stopStun());
         }
@@ -144,9 +139,14 @@ public class Player : MonoBehaviour {
             kickDelay = 0;
             rend.sprite = sprites[0];
         }
+				if (faceDir == 1) {
+					transform.rotation = Quaternion.Euler(0,0,0);
+				} else {
+					transform.rotation = Quaternion.Euler(0,-180.0f,0);
 
-        Vector2 move = new Vector2(xMove, yMove) * speed * Manager.instance.timeModifier;
-        transform.position = new Vector2(transform.position.x + move.x, transform.position.y);
+				}
+        Vector3 move = new Vector3(xMove, yMove, -1) * speed * Manager.instance.timeModifier;
+        transform.position = new Vector3(transform.position.x + move.x, transform.position.y, -1);
 
         if(yMove == 1) {
             jump();
