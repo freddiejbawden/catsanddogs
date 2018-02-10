@@ -16,7 +16,7 @@ public class Player : MonoBehaviour {
     private int xMove = 0;
     private int yMove = 0;
     [SerializeField] private Sprite[] sprites = new Sprite[2];
-    public SpriteRenderer rend;
+    private SpriteRenderer rend;
 
     private void OnCollisionEnter2D(Collision2D col) {
         if(col.gameObject.tag.Contains("Jump")) {
@@ -82,8 +82,8 @@ public class Player : MonoBehaviour {
                     yMove = 1;
                 }
 
-                if(Input.GetKey(KeyCode.E) && canKick) {
-                    if(kickDelay < 0) {
+                if(Input.GetKey(KeyCode.LeftControl)) {
+                    if(kickDelay <= 0) {
                         kick();
                     }
                 }
@@ -100,7 +100,7 @@ public class Player : MonoBehaviour {
                     yMove = 1;
                 }
 
-                if(Input.GetKey(KeyCode.U) && canKick) {
+                if(Input.GetKey(KeyCode.RightControl)) {
                     if(kickDelay <= 0) {
                         kick();
                     }
@@ -118,10 +118,12 @@ public class Player : MonoBehaviour {
     }
 
     private void kick() {
-        Vector2 kickForce = new Vector2(kickSpeed * xMove, 0.0f);
-        otherPlayer.GetComponent<Rigidbody2D>().AddForce(kickForce);
+        if(canKick) {
+            Vector2 kickForce = new Vector2(kickSpeed * xMove, 0.0f);
+            otherPlayer.GetComponent<Rigidbody2D>().AddForce(kickForce);
+        }
         rend.sprite = sprites[1];
-        kickDelay = 0.2f;
+        kickDelay = 0.4f;
     }
 
     private void move() {
