@@ -34,9 +34,6 @@ public class Animal : MonoBehaviour {
 		if (col.gameObject.tag.Contains("Ground")) {
 			Destroy(gameObject);
 		}
-
-		Debug.Log("Test");
-
 	}
 
 }
