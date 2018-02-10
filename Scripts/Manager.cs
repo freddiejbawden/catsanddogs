@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Manager : MonoBehaviour {
-    private float gameTime = 1.0f;
+    [SerializeField] private float gameTime = 1.0f;
     public float timeModifier;
 
     public static Manager instance;
