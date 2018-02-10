@@ -7,6 +7,7 @@ public class Player : MonoBehaviour {
     private bool canJump;
     private bool canKick;
     private bool isStunned;
+    public bool isLoser;
     [SerializeField] private bool wasd;
     private int faceDir;
     private float jumpSpeed = 500.0f;
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour {
     private float kickSpeed = 500.0f;
     private float speed = 5.0f;
     private GameObject otherPlayer;
+    private int lives = 3;
     private int xMove = 0;
     private int yMove = 0;
     [SerializeField] private Sprite[] sprites = new Sprite[2];
@@ -62,7 +64,11 @@ public class Player : MonoBehaviour {
     }
 
     private void die() {
-        Destroy(gameObject);
+        lives--;
+
+        if(lives <= 0) {
+            isLoser = true;
+        }
     }
 
     private void input() {

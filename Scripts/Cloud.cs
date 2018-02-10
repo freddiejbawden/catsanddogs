@@ -39,11 +39,13 @@ public class Cloud : MonoBehaviour {
     }
 
     private IEnumerator thunderRoutine() {
-        yield return new WaitForSeconds(randTime);
+        while(true) {
+            yield return new WaitForSeconds(randTime);
 
-        flash = StartCoroutine(cloudFlash());
+            flash = StartCoroutine(cloudFlash());
 
-        source.PlayOneShot(thunder);
-        randTime = Random.Range(4, 15);
+            source.PlayOneShot(thunder);
+            randTime = Random.Range(4, 15);
+        }
     }
 }
