@@ -8,6 +8,7 @@ public class Player : MonoBehaviour {
     private bool canKick;
     private bool isStunned;
     [SerializeField] private bool wasd;
+    private int faceDir;
     private float jumpSpeed = 500.0f;
     private float kickDelay = 0.0f;
     private float kickSpeed = 500.0f;
@@ -72,17 +73,19 @@ public class Player : MonoBehaviour {
             if(wasd) {
                 if(Input.GetKey(KeyCode.A)) {
                     xMove--;
+                    faceDir = -1;
                 }
 
                 if(Input.GetKey(KeyCode.D)) {
                     xMove++;
+                    faceDir = 1;
                 }
 
                 if(Input.GetKey(KeyCode.W) && canJump) {
                     yMove = 1;
                 }
 
-                if(Input.GetKey(KeyCode.LeftControl)) {
+                if(Input.GetKeyDown(KeyCode.LeftShift)) {
                     if(kickDelay <= 0) {
                         kick();
                     }
@@ -90,17 +93,19 @@ public class Player : MonoBehaviour {
             } else {
                 if(Input.GetKey(KeyCode.J)) {
                     xMove--;
+                    faceDir = -1;
                 }
 
                 if(Input.GetKey(KeyCode.L)) {
                     xMove++;
+                    faceDir = 1;
                 }
 
                 if(Input.GetKey(KeyCode.I) && canJump) {
                     yMove = 1;
                 }
 
-                if(Input.GetKey(KeyCode.RightControl)) {
+                if(Input.GetKeyDown(KeyCode.RightControl)) {
                     if(kickDelay <= 0) {
                         kick();
                     }
@@ -119,7 +124,7 @@ public class Player : MonoBehaviour {
 
     private void kick() {
         if(canKick) {
-            Vector2 kickForce = new Vector2(kickSpeed * xMove, 0.0f);
+            Vector2 kickForce = new Vector2(kickSpeed * faceDir, 0.0f);
             otherPlayer.GetComponent<Rigidbody2D>().AddForce(kickForce);
         }
         rend.sprite = sprites[1];
