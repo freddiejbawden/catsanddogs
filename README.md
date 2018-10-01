@@ -1,2 +1,2 @@
 # catsanddogs
-We're v good at gams
+GameDevSoc Chilljam project
